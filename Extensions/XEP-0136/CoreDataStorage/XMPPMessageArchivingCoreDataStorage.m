@@ -405,16 +405,19 @@ static XMPPMessageArchivingCoreDataStorage *sharedInstance;
 			}
 			
 			archivedMessage.message = message;
-			archivedMessage.body = messageBody;
+			archivedMessage.body = ([message attributeForName:@"mammID"].stringValue) ? [NSString stringWithFormat:@"%@$%@", messageBody, [message attributeForName:@"mammID"].stringValue] : messageBody;
 			
 			archivedMessage.bareJid = [messageJid bareJID];
 			archivedMessage.streamBareJidStr = [myJid bare];
 			
-			NSDate *timestamp = [message delayedDeliveryDate];
-			if (timestamp)
-				archivedMessage.timestamp = timestamp;
-			else
-				archivedMessage.timestamp = [[NSDate alloc] init];
+            NSDateFormatter *dateFormatter = [[NSDateFormatter alloc]init];
+            [dateFormatter setDateFormat:@"yyyy-MM-DD'T'HH:mm:ss'Z'"];
+            [dateFormatter setTimeZone:[NSTimeZone timeZoneWithAbbreviation:@"UTC"]];
+            NSDate *timestamp = [dateFormatter dateFromString:[[message attributeForName:@"stamp"]stringValue]];
+            if (timestamp)
+                archivedMessage.timestamp = timestamp;
+            else
+                archivedMessage.timestamp = [[NSDate alloc] init];
 			
 			archivedMessage.thread = [[message elementForName:@"thread"] stringValue];
 			archivedMessage.isOutgoing = isOutgoing;
