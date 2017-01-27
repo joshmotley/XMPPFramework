@@ -322,6 +322,24 @@ static XMPPMessageArchivingCoreDataStorage *sharedInstance;
 	return [NSEntityDescription entityForName:[self contactEntityName] inManagedObjectContext:moc];
 }
 
+-(void)deleteAllMessagesFromCoreData{
+    NSArray *stores = [[self persistentStoreCoordinator] persistentStores];
+    
+    NSFetchRequest *request = [[NSFetchRequest alloc] initWithEntityName:@"XMPPMessageArchiving_Message_CoreDataObject"];
+    NSBatchDeleteRequest *delete = [[NSBatchDeleteRequest alloc] initWithFetchRequest:request];
+    
+    NSError *deleteError = nil;
+    for(NSPersistentStore *store in stores) {
+        [[self persistentStoreCoordinator] removePersistentStore:store error:nil];
+        [[NSFileManager defaultManager] removeItemAtPath:store.URL.path error:nil];
+        NSPersistentStore *persistentStore = [[self persistentStoreCoordinator]  addPersistentStoreWithType:NSSQLiteStoreType
+                                                                                              configuration:nil
+                                                                                                        URL:store.URL
+                                                                                                    options:storeOptions
+                                                                                                      error:nil];
+    }
+}
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 #pragma mark Storage Protocol
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

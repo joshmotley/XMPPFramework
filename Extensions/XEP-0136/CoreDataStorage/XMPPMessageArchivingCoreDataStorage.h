@@ -48,6 +48,8 @@
                                                       streamBareJidStr:(NSString *)streamBareJidStr
                                                   managedObjectContext:(NSManagedObjectContext *)moc;
 
+-(void)deleteAllMessagesFromCoreData;
+
 /* Inherited from XMPPCoreDataStorage
  * Please see the XMPPCoreDataStorage header file for extensive documentation.
  
